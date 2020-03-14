@@ -21,7 +21,17 @@ $ cd aws-base
 $ pulumi new https://github.com/joeduffy/pulumi-architectures/aws-ts-base-infra
 ```
 
-This will walk you through configuring your stack. Afterward, you can deploy it by running:
+This will walk you through creating and configuring your new project and stack.
+
+Before proceeding, enter into the virtual environment and restore dependencies as instructed:
+
+```bash
+$ python3 -m venv venv
+$ source venv/bin/activate
+$ pip3 install -r requirements.txt
+```
+
+Afterward, you can deploy your infrastructure by running:
 
 ```bash
 $ pulumi up
