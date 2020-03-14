@@ -18,7 +18,7 @@ your own projects. To get started, first create a new project from it:
 ```bash
 $ mkdir aws-base
 $ cd aws-base
-$ pulumi new https://github.com/joeduffy/pulumi-architectures/aws-ts-base-infra
+$ pulumi new https://github.com/joeduffy/pulumi-architectures/aws-cs-base-infra
 ```
 
 This will walk you through configuring your stack. Afterward, you can deploy it by running:
