@@ -1,0 +1,9 @@
+name: ${PROJECT}
+description: ${DESCRIPTION}
+runtime: go
+template:
+  description: AWS base networking infrastructure (in Go)
+  config:
+    aws:region:
+      description: The AWS region to deploy into
+      default: us-east-1
