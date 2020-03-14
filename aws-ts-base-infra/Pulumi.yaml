@@ -2,36 +2,36 @@ name: ${PROJECT}
 description: ${DESCRIPTION}
 runtime: nodejs
 template:
-  description: AWS base networking infrastructure.
+  description: AWS base networking infrastructure
   config:
     aws:region:
-      description: The AWS region to deploy into.
+      description: The AWS region to deploy into
       default: us-east-1
     availabilityZones:
-      description: An array of AZs to deploy into (defaults to all of the current region's).
+      description: An array of AZs to deploy into (defaults to all of the current region's)
     numberOfAvailabilityZones:
-      description: The number of AZs to deploy into (defaults to all of them).
+      description: The number of AZs to deploy into (defaults to all of them)
     createPrivateSubnets:
-      description: Set to `false` if you want to create only public subnets.
+      description: Set to `false` if you want to create only public subnets
       default: true
     createProtectedSubnets:
-      description: Set to `true` to create a network ACL protected subnet in each AZ.
+      description: Set to `true` to create a network ACL protected subnet in each AZ
       default: false
     vpcCidr:
-      description: Configure VPC's CIDR block.
+      description: Configure VPC's CIDR block
       default: 10.0.0.0/16
     vpcTenancy:
-      description: Configure the VPC's tenancy.
+      description: Configure the VPC's tenancy
       default: default
     publicSubnetCidrs:
-      description: Set the CIDR blocks for public subnets.
+      description: Set the CIDR blocks for public subnets
     publicSubnetTags:
-      description: Set the tags for public subnets.
+      description: Set the tags for public subnets
     privateSubnetCidrs:
-      description: Set the CIDR blocks for private subnets, if enabled.
+      description: Set the CIDR blocks for private subnets, if enabled
     privateSubnetTags:
-      description: Set the tags for private subnets, if enabled.
+      description: Set the tags for private subnets, if enabled
     protectedSubnetCidrs:
-      description: Set the CIDR blocks for private NACL subnets, if enabled.
+      description: Set the CIDR blocks for private NACL subnets, if enabled
     protectedSubnetTags:
-      description: Set the tags for private NACL subnets, if enabled.
+      description: Set the tags for private NACL subnets, if enabled

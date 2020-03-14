@@ -92,10 +92,10 @@ async function main() {
             const privateSubnet = new aws.ec2.Subnet(`PrivateSubnet${i}A`, {
                 vpcId: vpc.id,
                 availabilityZone: az,
-                cidrBlock: privateSubnetCidrs[i],
+                cidrBlock: privateSubnetCidrs![i],
                 tags: Object.assign({
                     "Name": `Private subnet ${i}A`,
-                }, privateSubnetTags[i]),
+                }, privateSubnetTags![i]),
             });
             privateSubnetIds.push(privateSubnet.id);
 
@@ -124,10 +124,10 @@ async function main() {
                 const protectedSubnet = new aws.ec2.Subnet(`PrivateSubnet${i}B`, {
                     vpcId: vpc.id,
                     availabilityZone: az,
-                    cidrBlock: protectedSubnetCidrs[i],
+                    cidrBlock: protectedSubnetCidrs![i],
                     tags: Object.assign({
                         "Name": `Private subnet ${i}B`,
-                    }, protectedSubnetTags[i]),
+                    }, protectedSubnetTags![i]),
                 });
                 protectedSubnetIds.push(protectedSubnet.id);
 
