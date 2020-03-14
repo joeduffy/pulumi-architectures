@@ -1,0 +1,9 @@
+name: ${PROJECT}
+description: ${DESCRIPTION}
+runtime: nodejs
+template:
+  description: AWS base networking infrastructure (in TypeScript)
+  config:
+    aws:region:
+      description: The AWS region to deploy into
+      default: us-east-1
