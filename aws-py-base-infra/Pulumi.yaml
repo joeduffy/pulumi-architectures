@@ -1,8 +1,8 @@
 name: ${PROJECT}
 description: ${DESCRIPTION}
-runtime: nodejs
+runtime: python
 template:
-  description: AWS base networking infrastructure (in TypeScript)
+  description: AWS base networking infrastructure (in Python)
   config:
     aws:region:
       description: The AWS region to deploy into

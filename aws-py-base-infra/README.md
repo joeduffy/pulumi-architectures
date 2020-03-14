@@ -1,13 +1,13 @@
-# AWS Base Infrastructure in TypeScript IaC
+# AWS Base Infrastructure in Python IaC
 
 This template provides a networking foundation based on AWS best practices for your AWS infrastructure. It builds a
 Virtual Private Cloud (VPC) with public and private subnets where you can launch AWS services and other resources.
-All resources are provisioned using Pulumi Infrastructure as Code written in TypeScript/Node.js.
+All resources are provisioned using Pulumi Infrastructure as Code written in Python.
 
 ## Prerequisites
 
 * [Install Pulumi](https://www.pulumi.com/docs/get-started/install/)
-* [Install Node.js](https://nodejs.org/en/download/)
+* [Install Python 3](https://www.python.org/downloads/)
 * [Configure AWS Access](https://www.pulumi.com/docs/intro/cloud-providers/aws/setup/)
 
 ## Using This Template
