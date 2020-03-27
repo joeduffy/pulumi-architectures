@@ -11,7 +11,7 @@ type projectConfig struct {
 	// List of AZs to use for the subnets in the VPC. Note: the logical order is preserved.
 	AvailabilityZones *[]string
 	// Number of AZs to use in the VPC. If both are specified, this must match your selections in the list of AZs parameter.
-	NumberOfAvailabilityZones *int
+	NumberOfAvailabilityZones int
 	// Set to false to create only public subnets. If false, the CIDR parameters for ALL private subnets will be ignored.
 	CreatePrivateSubnets bool
 	// Set to true to create a network ACL protected subnet in each AZ. If false, the CIDR parameters for those
@@ -50,7 +50,9 @@ func newProjectConfig(ctx *pulumi.Context) *projectConfig {
 
 	// Now parse out simple data, providing defaults as appropriate.
 	if v, err := config.TryInt(ctx, "numberOfAvailabilityZones"); err == nil {
-		cfg.NumberOfAvailabilityZones = &v
+		cfg.NumberOfAvailabilityZones = v
+	} else {
+		cfg.NumberOfAvailabilityZones = 2
 	}
 	if v, err := config.TryBool(ctx, "createPrivateSubnets"); err == nil {
 		cfg.CreatePrivateSubnets = v
@@ -86,10 +88,8 @@ func (cfg *projectConfig) GetAvailabilityZones() []string {
 	if err != nil {
 		panic(err)
 	}
-	if cfg.NumberOfAvailabilityZones != nil {
-		return currentZones.Names[:*cfg.NumberOfAvailabilityZones]
-	}
-	return currentZones.Names
+
+	return currentZones.Names[:cfg.NumberOfAvailabilityZones]
 }
 
 // Define some standard defaults for CIDR blocks if they aren't specified explicitly.

@@ -8,7 +8,7 @@ export const params = {
     // List of AZs to use for the subnets in the VPC. Note: the logical order is preserved.
     availabilityZones: config.getObject<string[]>("availabilityZones"),
     // Number of AZs to use in the VPC. If both are specified, this must match your selections in the list of AZs parameter.
-    numberOfAvailabilityZones: config.getNumber("numberOfAvailabilityZones"),
+    numberOfAvailabilityZones: config.getNumber("numberOfAvailabilityZones") || 2,
     // Set to false to create only public subnets. If false, the CIDR parameters for ALL private subnets will be ignored.
     createPrivateSubnets: config.getBoolean("createPrivateSubnets") === undefined ?
         true : config.getBoolean("createPrivateSubnets"),

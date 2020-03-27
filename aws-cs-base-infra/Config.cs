@@ -10,7 +10,7 @@ static class Config {
     static Config() {
         var config = new Pulumi.Config();
         AvailabilityZones = config.GetObject<string[]>("availabilityZones");
-        NumberOfAvailabilityZones = config.GetInt32("numberOfAvailabilityZones");
+        NumberOfAvailabilityZones = config.GetInt32("numberOfAvailabilityZones") ?? 2;
         CreatePrivateSubnets = config.GetBoolean("createPrivateSubnets") ?? true;
         CreateProtectedSubnets = config.GetBoolean("createProtectedSubnets") ?? false;
         VpcCidr = config.Get("vpcCidr") ?? "10.0.0.0/16";
@@ -26,7 +26,7 @@ static class Config {
     // List of AZs to use for the subnets in the VPC. Note: the logical order is preserved.
     public static readonly string[]? AvailabilityZones;
     // Number of AZs to use in the VPC. If both are specified, this must match your selections in the list of AZs parameter.
-    public static readonly int? NumberOfAvailabilityZones;
+    public static readonly int NumberOfAvailabilityZones;
     // Set to false to create only public subnets. If false, the CIDR parameters for ALL private subnets will be ignored.
     public static readonly bool CreatePrivateSubnets;
     // Set to true to create a network ACL protected subnet in each AZ. If false, the CIDR parameters for those
@@ -57,10 +57,7 @@ static class Config {
             return ImmutableArray.Create(AvailabilityZones);
         }
         var currentZones = await Aws.Invokes.GetAvailabilityZones();
-        if (NumberOfAvailabilityZones != null) {
-            return currentZones.Names.Take(NumberOfAvailabilityZones.Value).ToImmutableArray();
-        }
-        return currentZones.Names;
+        return currentZones.Names.Take(NumberOfAvailabilityZones).ToImmutableArray();
     }
 
     // GetPublicSubnetCidrs returns a list of CIDR blocks to use for public subnets, one per AZ.

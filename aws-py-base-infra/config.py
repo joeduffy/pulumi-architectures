@@ -7,7 +7,7 @@ config = pulumi.Config()
 # List of AZs to use for the subnets in the VPC. Note: the logical order is preserved.
 availability_zones = config.get_object('availabilityZones')
 # Number of AZs to use in the VPC. If both are specified, this must match your selections in the list of AZs parameter.
-number_of_availability_zones = config.get_int('numberOfAvailabilityZones')
+number_of_availability_zones = config.get_int('numberOfAvailabilityZones') or 2
 # Set to false to create only public subnets. If false, the CIDR parameters for ALL private subnets will be ignored.
 create_private_subnets = True if config.get_bool('createPrivateSubnets') is None else config.get_bool('createPrivateSubnets')
 # Set to true to create a network ACL protected subnet in each AZ. If false, the CIDR parameters for those
