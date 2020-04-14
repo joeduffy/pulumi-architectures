@@ -29,7 +29,7 @@ internet_gateway = aws.ec2.InternetGateway('InternetGateway',
     tags = { 'Name': f'{pulumi.get_project()}-{pulumi.get_stack()}' },
 )
 
-# Creat a Route Table for public subnets to use the Internet Gateway for 0.0.0.0/0 traffic.
+# Create a Route Table for public subnets to use the Internet Gateway for 0.0.0.0/0 traffic.
 public_subnet_route_table = aws.ec2.RouteTable('PublicSubnetRouteTable',
     vpc_id = vpc.id,
     tags = {
