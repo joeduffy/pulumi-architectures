@@ -1,6 +1,12 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
+// isPulumiMain returns true if we're running this as a program, rather than a library.
+export function isPulumiMain(m: any): boolean {
+    // TODO: would be better if Pulumi's RT library told us this.
+    return (!m.parent || m.parent.id.endsWith("@pulumi/pulumi/cmd/run/run.js"));
+}
+
 // getCurrentRegion returns the current AWS region, optionally using component resource options for the lookup.
 export function getCurrentRegion(opts?: pulumi.ComponentResourceOptions) {
     /** TODO: how to do this?

@@ -3,12 +3,10 @@ import * as pulumi from "@pulumi/pulumi";
 import { getNetworkArgsWithDefaults, NetworkArgs } from "./component";
 import * as utils from "./utils";
 
-// Read in the AZ and VPC configuration parameters and export them for easy consumption.
-const config = new pulumi.Config();
-
 // getNetworkArgs returns the full set of arguments from configuration, setting some defaults
 // as necessary (like the AZs) to produce a fully populated arg bag for the network component.
 export function getNetworkArgs(): Promise<NetworkArgs> {
+    const config = new pulumi.Config();
     const args: Partial<NetworkArgs> = {
         availabilityZones: config.getObject<string[]>("availabilityZones"),
         vpcCidr: config.get("vpcCidr"),

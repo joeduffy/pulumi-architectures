@@ -285,6 +285,7 @@ export async function createNetwork(
 // supplied and any missing information will be populated and returned.
 export async function getNetworkArgsWithDefaults(
         args?: Partial<NetworkArgs>, numberOfAvailabilityZones?: number): Promise<NetworkArgs> {
+    // TODO: allow component-level configuration?
     args = args || {};
 
     // Default to the AZs in the current region plus standard VPC parameters.
