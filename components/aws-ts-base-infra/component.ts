@@ -52,23 +52,23 @@ export class Network extends pulumi.ComponentResource {
             enableDnsSupport: true,
             enableDnsHostnames: true,
             tags: { "Name": name },
-        });
+        }, { parent: this });
 
         // Associate DHCP options with our VPC.
         this.dhcpOptions = new aws.ec2.VpcDhcpOptions("DHCPOptions", {
             domainName: region == "us-east-1" ? "ec2.internal" : `${region}.compute.internal`,
             domainNameServers: [ "AmazonProvidedDNS" ],
-        });
+        }, { parent: this });
         this.dhcpOptionsAssociation = new aws.ec2.VpcDhcpOptionsAssociation("VPCDHCPOptionsAssociation", {
             vpcId: this.vpc.id,
             dhcpOptionsId: this.dhcpOptions.id,
-        });
+        }, { parent: this });
 
         // Create an Internet Gateway for our public subnet to connect to the Internet.
         this.internetGateway = new aws.ec2.InternetGateway("InternetGateway", {
             vpcId: this.vpc.id,
             tags: { "Name": name },
-        });
+        }, { parent: this });
 
         // Creat a Route Table for public subnets to use the Internet Gateway for 0.0.0.0/0 traffic.
         const publicSubnetRouteTable = new aws.ec2.RouteTable("PublicSubnetRouteTable", {
@@ -77,12 +77,12 @@ export class Network extends pulumi.ComponentResource {
                 "Name": "Public Subnets",
                 "Network": "Public",
             },
-        });
+        }, { parent: this });
         const publicSubnetRoute = new aws.ec2.Route("PublicSubnetRoute", {
             routeTableId: publicSubnetRouteTable.id,
             destinationCidrBlock: "0.0.0.0/0",
             gatewayId: this.internetGateway.id,
-        });
+        }, { parent: this });
 
         // For each AZ, create the NAT Gateways and public and private subnets. Keep track of various properties
         // so that they can be exported as top-level stack exports later on.
@@ -101,29 +101,31 @@ export class Network extends pulumi.ComponentResource {
                 cidrBlock: args.publicSubnetCidrs[i],
                 mapPublicIpOnLaunch: true,
                 tags: Object.assign({ "Name": `Public subnet ${az}` }, args.publicSubnetTags[i]),
-            });
+            }, { parent: this });
             this.publicSubnets.push(publicSubnet);
 
             new aws.ec2.RouteTableAssociation(`PublicSubnet${i}RouteTableAssociation`, {
                 subnetId: publicSubnet.id,
                 routeTableId: publicSubnetRouteTable.id,
-            });
+            }, { parent: this });
 
             // If desired, create a NAT Gateway and private subnet for each AZ.
             if (args.createPrivateSubnets) {
-                const natEip = new aws.ec2.Eip(`NAT${i}EIP`, { vpc: true }, { dependsOn: this.internetGateway });
+                const natEip = new aws.ec2.Eip(`NAT${i}EIP`, {
+                    vpc: true
+                }, { parent: this, dependsOn: this.internetGateway });
                 const natGateway = new aws.ec2.NatGateway(`NATGateway${i}`, {
                     subnetId: publicSubnet.id,
                     allocationId: natEip.id,
-                });
+                }, { parent: this });
                 this.natEips!.push(natEip.publicIp);
 
                 const privateSubnet = new aws.ec2.Subnet(`PrivateSubnet${i}A`, {
                     vpcId: this.vpc.id,
                     availabilityZone: az,
-                    cidrBlock: this.privateSubnetCidrs![i],
+                    cidrBlock: args.privateSubnetCidrs![i],
                     tags: Object.assign({ "Name": `Private subnet ${i}A` }, args.privateSubnetTags![i]),
-                });
+                }, { parent: this });
                 this.privateSubnets!.push(privateSubnet);
 
                 const privateSubnetRouteTable = new aws.ec2.RouteTable(`PrivateSubnet${i}ARouteTable`, {
@@ -132,16 +134,16 @@ export class Network extends pulumi.ComponentResource {
                         "Name": `Private subnet ${i}A`,
                         "Network": "Private",
                     },
-                });
+                }, { parent: this });
                 const privateSubnetRoute = new aws.ec2.Route(`PrivateSubnet${i}ARoute`, {
                     routeTableId: privateSubnetRouteTable.id,
                     destinationCidrBlock: "0.0.0.0/0",
                     natGatewayId: natGateway.id,
-                });
+                }, { parent: this });
                 new aws.ec2.RouteTableAssociation(`PrivateSubnet${i}ARouteTableAssociation`, {
                     subnetId: privateSubnet.id,
                     routeTableId: privateSubnetRouteTable.id,
-                });
+                }, { parent: this });
 
                 // Remember the route table ID for the VPC endpoint later.
                 privateSubnetRouteTableIds.push(privateSubnetRouteTable.id);
@@ -153,7 +155,7 @@ export class Network extends pulumi.ComponentResource {
                         availabilityZone: az,
                         cidrBlock: args.protectedSubnetCidrs![i],
                         tags: Object.assign({ "Name": `Private subnet ${i}B` }, args.protectedSubnetTags![i]),
-                    });
+                    }, { parent: this });
                     this.protectedSubnets!.push(protectedSubnet);
 
                     const protectedSubnetRouteTable = new aws.ec2.RouteTable(`PrivateSubnet${i}BRouteTable`, {
@@ -162,16 +164,16 @@ export class Network extends pulumi.ComponentResource {
                             "Name": `Private subnet ${i}B`,
                             "Network": "Private",
                         },
-                    });
+                    }, { parent: this });
                     const protectedSubnetRoute = new aws.ec2.Route(`PrivateSubnet${i}BRoute`, {
                         routeTableId: protectedSubnetRouteTable.id,
                         destinationCidrBlock: "0.0.0.0/0",
                         natGatewayId: natGateway.id,
-                    });
+                    }, { parent: this });
                     new aws.ec2.RouteTableAssociation(`PrivateSubnet${i}BRouteTableAssociation`, {
                         subnetId: protectedSubnet.id,
                         routeTableId: protectedSubnetRouteTable.id,
-                    });
+                    }, { parent: this });
                     const protectedSubnetNetworkAcl = new aws.ec2.NetworkAcl(`PrivateSubnet${i}BNetworkAcl`, {
                         vpcId: this.vpc.id,
                         subnetIds: [ protectedSubnet.id ],
@@ -179,7 +181,7 @@ export class Network extends pulumi.ComponentResource {
                             "Name": `NACL protected subnet ${i}`,
                             "Network": "NACL Protected",
                         },
-                    });
+                    }, { parent: this });
                     const protectedSubnetNetworkAclEntryInbound = new aws.ec2.NetworkAclRule(`PrivateSubnet${i}BNetworkAclEntryInbound`, {
                         networkAclId: protectedSubnetNetworkAcl.id,
                         cidrBlock: "0.0.0.0/0",
@@ -187,7 +189,7 @@ export class Network extends pulumi.ComponentResource {
                         protocol: "-1",
                         ruleAction: "allow",
                         ruleNumber: 100,
-                    });
+                    }, { parent: this });
                     const protectedSubnetNetworkAclEntryOutbound = new aws.ec2.NetworkAclRule(`PrivateSubnet${i}BNetworkAclEntryOutbound`, {
                         networkAclId: protectedSubnetNetworkAcl.id,
                         cidrBlock: "0.0.0.0/0",
@@ -195,7 +197,7 @@ export class Network extends pulumi.ComponentResource {
                         protocol: "-1",
                         ruleAction: "allow",
                         ruleNumber: 100,
-                    });
+                    }, { parent: this });
 
                     // Remember the route table ID for the VPC endpoint later.
                     privateSubnetRouteTableIds.push(protectedSubnetRouteTable.id);
@@ -218,7 +220,7 @@ export class Network extends pulumi.ComponentResource {
                 }),
                 routeTableIds: privateSubnetRouteTableIds,
                 serviceName: `com.amazonaws.${region}.s3`,
-            });
+            }, { parent: this });
         }
     }
 
@@ -300,13 +302,13 @@ export async function getNetworkArgsWithDefaults(
     args.publicSubnetTags = args.publicSubnetTags || await utils.getDefaultPublicSubnetTags(count);
     //     - Private Subnets:
     if (args.createPrivateSubnets) {
-        args.privateSubnetCidrs = args.privateSubnetCidrs || await utils.getDefaultPublicSubnetCidrs(count);
-        args.privateSubnetTags = args.privateSubnetTags || await utils.getDefaultPublicSubnetTags(count);
+        args.privateSubnetCidrs = args.privateSubnetCidrs || await utils.getDefaultPrivateSubnetCidrs(count);
+        args.privateSubnetTags = args.privateSubnetTags || await utils.getDefaultPrivateSubnetTags(count);
     }
     //     - Protected Subnets:
     if (args.createProtectedSubnets) {
-        args.privateSubnetCidrs = args.privateSubnetCidrs || await utils.getDefaultPublicSubnetCidrs(count);
-        args.privateSubnetTags = args.privateSubnetTags || await utils.getDefaultPublicSubnetTags(count);
+        args.privateSubnetCidrs = args.privateSubnetCidrs || await utils.getDefaultProtectedSubnetCidrs(count);
+        args.privateSubnetTags = args.privateSubnetTags || await utils.getDefaultProtectedSubnetTags(count);
     }
 
     return args as NetworkArgs;
